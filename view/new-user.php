@@ -72,7 +72,7 @@
             <div class="card-header" style="text-align: center;">
                 Registro de usuario
             </div>
-            <form>
+            <form id="frm_user" action="" method="">
                 <div class="card-body">
                     <div class="mb-3 row">
                         <label for="nro_identidad" class="col-sm-3 col-form-label">Nro de documento</label>
@@ -153,6 +153,7 @@
         2 days ago
     </div>
 </body>
+<script src="<?php echo BASE_URL?>view/function/users.js"> </script>
 <script src="<?php echo BASE_URL ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
 
 </html>
