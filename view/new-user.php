@@ -6,6 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ccorimanya</title>
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+<style> 
+    .bi{
+        color: white;
+    }
+</style>
 </head>
 
 <body>
@@ -18,10 +24,12 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item">
+                        <li class="nav-item" >
+                            <i class="bi bi-house"></i>
                             <a class="nav-link active" aria-current="page" href="#">Home</a>
                         </li>
                         <li class="nav-item">
+                            <i class="bi bi-people"></i>
                             <a class="nav-link" href="#">Users</a>
                         </li>
                         <li class="nav-item">
@@ -43,8 +51,8 @@
                         <li class="nav-item">
                             <a class="nav-link" href="#">Sales</a>
                         </li>
-
-
+                        
+                        
                     </ul>
                     <form class="d-flex" role="search">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -78,7 +86,7 @@
                         <label for="nro_identidad" class="col-sm-3 col-form-label">Nro de documento</label>
                         <div class="col-sm-9">
                             <input type="number" class="form-control" id="nro_identidad" name="nro_identidad" required>
-
+                            
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -141,19 +149,21 @@
                         </div>
                     </div>
                     <div style=" display:flex; justify-content:center; gap:20px">
-                        <button type="sumbit" class="btn btn-info">Sumbit</button >
-                        <button type="reset"  class="btn btn-primary" id="clearBtn">Clear</button>
-                        <button type="button" class="btn btn-danger" >Cancel</button>
+                        <button type="sumbit"   class="btn btn-info">Sumbit</button >
+                        <button type="reset"   class="btn btn-primary" id="clearBtn">Clear</button>
+                        <button type="button" onclick="alerth()" class="btn btn-danger" >Cancel</button>
                     </div>
-            </form>
-        </div>
+                </form>
+            </div>
     </div>
-    </div>
+</div>
     <div class="card-footer text-body-secondary">
         2 days ago
     </div>
+    
 </body>
 <script src="<?php echo BASE_URL?>view/function/users.js"> </script>
 <script src="<?php echo BASE_URL ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 </html>
