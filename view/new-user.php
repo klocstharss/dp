@@ -12,6 +12,9 @@
         color: white;
     }
 </style>
+<script>
+    const base_url='<?php echo BASE_URL; ?>';
+</script>
 </head>
 
 <body>
@@ -92,7 +95,7 @@
                     <div class="mb-3 row">
                         <label for="razon_social" class="col-sm-2 col-form-label">Nombre/razón social</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="razon_social" name="razon_social	" required>
+                            <input type="text" class="form-control" id="razon_social" name="razon_social" required>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -102,9 +105,9 @@
                         </div>
                     </div>
                     <div class="mb-3 row">
-                        <label for="correo	" class="col-sm-2 col-form-label">Correo</label>
+                        <label for="correo" class="col-sm-2 col-form-label">Correo</label>
                         <div class="col-sm-10">
-                            <input type="email" class="form-control" id="correo	" name="correo" required>
+                            <input type="email" class="form-control" id="correo" name="correo" required>
                         </div>
                     </div>
                     <div class="mb-3 row">
@@ -149,7 +152,7 @@
                         </div>
                     </div>
                     <div style=" display:flex; justify-content:center; gap:20px">
-                        <button type="sumbit"   class="btn btn-info">Sumbit</button >
+                        <button type="submit"   class="btn btn-info">Submit</button >
                         <button type="reset"   class="btn btn-primary" id="clearBtn">Clear</button>
                         <button type="button" onclick="alerth()" class="btn btn-danger" >Cancel</button>
                     </div>
@@ -164,6 +167,6 @@
 </body>
 <script src="<?php echo BASE_URL?>view/function/users.js"> </script>
 <script src="<?php echo BASE_URL ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </html>
