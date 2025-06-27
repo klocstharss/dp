@@ -52,6 +52,15 @@ async function registrarUsuario() {
          cache: 'no-cache',
          body: datos
       });
+      let json = await respuesta.json();
+      // validamos que json sea true
+      if (json.status)  { //true
+         alert(json.msg);
+         document.getElementById('frm_user').reset();
+      }else{
+         alert(json.msg);
+      }
+      
    } catch (error) {
       console.log("Error al registrar Usuario:" + error);
    }
