@@ -1,4 +1,7 @@
 <?php
+require_once("../model/UsuarioModel.php");
+$objPersona= new UsuarioModel();
+
 $tipo = $_GET['tipo'];
 if ($tipo == "registrar") {
     //print_r($_POST);
@@ -12,10 +15,13 @@ if ($tipo == "registrar") {
     $cod_postal = $_POST['cod_postal'];
     $direccion = $_POST['direccion'];
     $rol = $_POST['rol'];
+    //ENCRIPTANDO NRO_IDENTIDAD(DNI) PARA UTILIZARLO COMO PSSWORD
+    $password = password_hash($nro_identidad,PASSWORD_DEFAULT);
     
     if ($nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == "" || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
         $arrResponse = array('status'=> false, 'msg' => 'Error, campos vacios' );
     } else {
+        $respuesta = $objPersona-> registrar($nro_identidad, $razon_social, $telefono,  $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password);
         $arrResponse = array('status'=> true, 'msg' => 'procedemos a registrar' );
     }
     echo json_encode($arrResponse);
