@@ -45,10 +45,11 @@ if ($tipo == "iniciar_sesion") {
         $respuesta = array('status' => false, 'msg' => 'Error, campos vacios');
     } else {
         $existePersona = $objPersona->existePersona($nro_identidad);
-        if (!$existePersona == 0) {
+        if (!$existePersona) {
             $respuesta = array('status' => false, 'msg' => 'Error, usuario no registrado');
         } else {
             $persona = $objPersona->buscarPersonaPorNroIdenidad($nro_identidad);
+            
             if (password_verify($password, $persona->password)) {
                 session_start();
                 $_SESSION['ventas_id'] = $persona->id;
