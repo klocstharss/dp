@@ -5,12 +5,20 @@ class viewsControl extends viewModel{
     public function getPlantillaControl(){
         return require_once "./view/plantilla.php";
     }
-    public function getViewControl(){ 
-        if (isset($_GET["views"])) {
-            $ruta = explode("/", $_GET["views"]);
-            $response = viewModel::get_view($ruta[0]);
+    public function getViewControl()
+    {
+
+        session_start();
+        if(isset($_SESSION['ventas_id'])){
+
+            if (isset($_GET["views"])) {
+                $ruta = explode("/", $_GET["views"]);
+                $response = viewModel::get_view($ruta[0]);
+            }else{
+                $response = "index.php";
+            }
         }else{
-            $response = "index.php";
+                $response = "login";
         }
         return $response;
     }
