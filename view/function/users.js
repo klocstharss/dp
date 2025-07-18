@@ -110,4 +110,24 @@ async function iniciar_sesion() {
 }
 
 
-   
+async function view_users() {
+   alert('cargar usuarios');
+}
+// if(document.getElementById('content_users')){
+   //view_users();
+//}
+
+//async function view_users() {
+  //  try {
+    // let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {
+      //      method: 'POST',
+        //    mode: 'cors',
+          //  cache: 'no-cache',
+        //});
+   // } catch (error) {
+      
+    //}
+//}
+if (document.getElementById('content_users')) {
+    view_users();
+}

@@ -33,7 +33,7 @@
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-people"></i>
-                            <a class="nav-link" href="<? BASE_URL ?>users">Users</a>
+                            <a class="nav-link" href="<?= BASE_URL ?>users">Users</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Products</a>
