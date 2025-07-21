@@ -29,7 +29,7 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item" >
                             <i class="bi bi-house"></i>
-                            <a class="nav-link active" aria-current="page" href="#">Home</a>
+                            <a class="nav-link active" aria-current="page" href="<?= BASE_URL ?>home">Home</a>
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-people"></i>
@@ -39,7 +39,7 @@
                             <a class="nav-link" href="#">Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="categories.php">Categories</a>
+                            <a class="nav-link" href="<?= BASE_URL ?>categories">Categories</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Clients</a>

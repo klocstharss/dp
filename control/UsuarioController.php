@@ -62,6 +62,8 @@ if ($tipo == "iniciar_sesion") {
     }
     echo json_encode($respuesta);
 }
-if ($tipo=="ver_usuarios") {
-    echo"recibido en el controlador";
+if ($tipo == 'mostrar_usuarios') {
+    $usuarios = $objPersona->mostrarUsuarios();
+    header('content-type:application/json');
+    echo json_encode($usuarios);
 }

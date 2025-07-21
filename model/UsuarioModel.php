@@ -27,4 +27,14 @@ class UsuarioModel {
         $sql = $this-> conexion-> query($consulta);
          return $sql -> fetch_object();
     }
+
+ public function mostrarUsuarios(){
+        $arr_usuarios = array();
+        $consulta = "SELECT * FROM persona";
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {
+            array_push($arr_usuarios, $objeto);
+        }
+        return $arr_usuarios;
+    }
 }

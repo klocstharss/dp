@@ -111,23 +111,35 @@ async function iniciar_sesion() {
 
 
 async function view_users() {
-   alert('cargar usuarios');
+    try {
+        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=mostrar_usuarios', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        let json = await respuesta.json();
+        if (json && json.length > 0) {
+            let html = '';
+            json.forEach((user, index) => {
+                html += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${user.nro_identidad || ''}</td>
+                    <td>${user.razon_social|| ''}</td>
+                    <td>${user.correo ||''}</td> 
+                    <td>${user.rol ||''}</td> 
+                    <td>${user.estado || ''}</td>
+                </tr>`;
+            });
+            document.getElementById('content_users').innerHTML = html;
+        } else {
+            document.getElementById('content_users').innerHTML = '<tr><td colspan="6">No hay usuarios disponibles</td></tr>';
+        }
+    } catch (error) {
+        console.log(error);
+        document.getElementById('content_users').innerHTML = '<tr><td colspan="6">Error al cargar los usuarios</td></tr>';
+    }
 }
-// if(document.getElementById('content_users')){
-   //view_users();
-//}
 
-//async function view_users() {
-  //  try {
-    // let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver_usuarios', {
-      //      method: 'POST',
-        //    mode: 'cors',
-          //  cache: 'no-cache',
-        //});
-   // } catch (error) {
-      
-    //}
-//}
 if (document.getElementById('content_users')) {
     view_users();
 }
