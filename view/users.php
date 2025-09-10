@@ -9,6 +9,7 @@
             <th>Correo</th>
             <th>Rol</th>
             <th>Estado</th>
+            <th>ancla</th>
             </tr>
         </thead>
         <tbody id="content_users"></tbody>
@@ -16,4 +17,4 @@
 </div>
 <script src="<?= BASE_URL ?>view/function/users.js"></script>
 
-<!--<script>view_users();</script>-->
+<script>view_users();</script>
