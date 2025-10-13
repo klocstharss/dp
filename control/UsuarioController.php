@@ -63,6 +63,29 @@ if($tipo == "iniciar_sesion"){
     echo json_encode($respuesta);
 }
 
+if ($tipo == "mostrar_proveedores") {
+    $proveedores = $objPersona->mostrarProveedores();
+    $respuesta = array();
+    if (!empty($proveedores)) {
+        $respuesta = array('status' => true, 'msg' => 'Proveedores encontrados', 'data' => $proveedores);
+    }else {
+        $respuesta = array('status' => false, 'msg' => 'No hay proveedores registrados', 'data' => array());
+    }
+    header('Content-Type: application/json');
+    echo json_encode($respuesta);
+}
+
+if ($tipo == "mostrar_clientes") {
+    $clientes = $objPersona->mostrarClientes();
+    $respuesta = array();
+    if (!empty($clientes)) {
+        $respuesta = array('status' => true, 'msg' => 'Clientes encontrados', 'data' => $clientes);
+    } else {
+        $respuesta = array('status' => false, 'msg' => 'No hay clientes registrados', 'data' => array());
+    }
+    header('Content-Type: application/json');
+    echo json_encode($respuesta);
+}
 
 if ($tipo == "mostrar_usuarios") {
     $usuarios = $objPersona->mostrarUsuarios();
@@ -147,17 +170,18 @@ if ($tipo == "actualizar"){
     $cod_postal = $_POST['cod_postal'];
     $direccion = $_POST['direccion'];
     $rol = $_POST['rol'];
+    $estado = isset($_POST['estado']) ? $_POST['estado'] : null;
 
    if ($id_persona == "" || $nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == ""  || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
     }else {
         $existeID = $objPersona->ver($id_persona);
         if (!$existeID){
-            $arrResponse = array('status' => false, 'msg' => 'Error, usario no existe');
+            $arrResponse = array('status' => false, 'msg' => 'Error, usuario no existe');
             echo json_encode($arrResponse);
             exit;
         } else{
-            $actualizar = $objPersona->actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol);
+            $actualizar = $objPersona->actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $estado);
             if ($actualizar) {
                 $arrResponse = array('status' => true, 'msg' => "actualizado correctamente");
             }else{

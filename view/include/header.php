@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>fernandez</title>
+    <title>Ccorimanya</title>
 
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -35,7 +35,7 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
                             <i class="bi bi-house"></i>
-                            <a class="nav-link active" aria-current="page" href="new-user">Home</a>
+                            <a class="nav-link active" aria-current="page" href="<?= BASE_URL ?>new-user">Home</a>
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-person-square"></i>
@@ -51,11 +51,11 @@
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-people"></i>
-                            <a class="nav-link" href="#">Clients</a>
+                            <a class="nav-link" href="<?= BASE_URL ?>clients">Clients</a>
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-shop"></i>
-                            <a class="nav-link" href="#">Shops</a>
+                            <a class="nav-link" href="<?= BASE_URL ?>proveedores">Proveedores</a>
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-cart3"></i>
@@ -86,3 +86,5 @@
             </div>
         </nav>
     </header>
+</body>
+</html>

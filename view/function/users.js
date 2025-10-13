@@ -154,6 +154,76 @@ async function view_users() {
     }
 }
 
+async function view_clients() {
+    try {
+        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=mostrar_clientes', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        let json = await respuesta.json();
+        let html = '';
+        if (json.status && Array.isArray(json.data)) {
+            json.data.forEach((user, index) => {
+                html += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${user.nro_identidad || ''}</td>
+                    <td>${user.razon_social || ''}</td>
+                    <td>${user.correo || ''}</td>
+                    <td>${user.estado || ''}</td>
+                    <td>
+                        <a href="`+ base_url + `edit-client/` + user.id + `" class="btn btn-primary">Editar</a>
+                        <button onclick="eliminarUsuario(` + user.id + `)" class="btn btn-danger">Eliminar</button>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            html = '<tr><td colspan="6">No hay clientes disponibles</td></tr>';
+        }
+        const cont = document.getElementById('content_clients');
+        if (cont) cont.innerHTML = html;
+    } catch (error) {
+        console.log(error);
+        const cont = document.getElementById('content_clients');
+        if (cont) cont.innerHTML = '<tr><td colspan="6">Error al cargar los clientes</td></tr>';
+    }
+}
+
+async function view_proveedores() {
+    try {
+        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=mostrar_proveedores', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        let json = await respuesta.json();
+        let html = '';
+        if (json.status && Array.isArray(json.data)) {
+            json.data.forEach((prov, index) => {
+                html += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${prov.nro_identidad || ''}</td>
+                    <td>${prov.razon_social || ''}</td>
+                    <td>${prov.correo || ''}</td>
+                    <td>${prov.estado || ''}</td>
+                    <td>
+                        <a href="`+ base_url + `edit-proveedor/` + prov.id + `" class="btn btn-primary">Editar</a>
+                        <button onclick="eliminarUsuario(` + prov.id + `)" class="btn btn-danger">Eliminar</button>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            html = '<tr><td colspan="6">No hay proveedores disponibles</td></tr>';
+        }
+        const cont = document.getElementById('content_proveedores');
+        if (cont) cont.innerHTML = html;
+    } catch (error) {
+        console.log(error);
+        const cont = document.getElementById('content_proveedores');
+        if (cont) cont.innerHTML = '<tr><td colspan="6">Error al cargar los proveedores</td></tr>';
+    }
+}
+
 if (document.getElementById('content_users')) {
     view_users();
 }
@@ -379,7 +449,13 @@ async function eliminarUsuario(id) {
                         title: "Eliminado",
                         text: json.msg
                     }).then(() => {
-                        view_users(); // Refrescar la lista de usuarios
+                        if (document.getElementById('content_users')) {
+                            view_users();
+                        } else if (document.getElementById('content_clients')) {
+                            view_clients();
+                        } else if (document.getElementById('content_proveedores')) {
+                            view_proveedores();
+                        }
                     });
                 } else {
                     Swal.fire({

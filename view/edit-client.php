@@ -3,62 +3,25 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Editar Usuario - Sistema de Venta</title>
+    <title>Editar Cliente - Sistema de Venta</title>
     <link href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
     <link href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap-icons.css" rel="stylesheet" />
     <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .container {
-            max-width: 800px;
-            margin-top: 50px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .card-header {
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: white;
-            background-color: #0d6efd;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            justify-content: center;
-            border-radius: 12px 12px 0 0;
-        }
-        .form-label {
-            font-weight: 600;
-        }
-        .btn-primary {
-            background-color: #0d6efd;
-            border: none;
-            font-weight: 600;
-            padding: 10px 20px;
-            border-radius: 8px;
-        }
-        .btn-primary:hover {
-            background-color: #0b5ed7;
-        }
-        .btn-secondary {
-            border-radius: 8px;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        .d-flex {
-            justify-content: center;
-            gap: 20px;
-        }
+        body { background-color: #f8f9fa; }
+        .container { max-width: 800px; margin-top: 50px; background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .card-header { font-weight: 700; font-size: 1.25rem; color: white; background-color: #0d6efd; display: flex; align-items: center; gap: 10px; justify-content: center; border-radius: 12px 12px 0 0; }
+        .btn-primary { background-color: #0d6efd; border: none; font-weight: 600; padding: 10px 20px; border-radius: 8px; }
+        .btn-primary:hover { background-color: #0b5ed7; }
+        .btn-secondary { border-radius: 8px; }
+        .form-group { margin-bottom: 1rem; }
+        .d-flex { justify-content: center; gap: 20px; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="card">
             <div class="card-header">
-                <i class="bi bi-pencil-square"></i> Editar Usuario
+                <i class="bi bi-pencil-square"></i> Editar Cliente
                 <?php
                 if (isset($_GET["views"])) {
                     $ruta = explode("/", $_GET["views"]);
@@ -124,15 +87,10 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="rol" class="col-sm-3 col-form-label">Rol</label>
+                        <label class="col-sm-3 col-form-label">Rol</label>
                         <div class="col-sm-9">
-                            <select id="rol" name="rol" class="form-select" required>
-                                <option value="">Seleccionar rol</option>
-                                <option value="admin">Administrador</option>
-                                <option value="vendedor">Vendedor</option>
-                                <option value="cliente">Cliente</option>
-                                <option value="proveedor">Proveedor</option>
-                            </select>
+                            <input type="hidden" id="rol" name="rol" value="cliente" />
+                            <input type="text" class="form-control" value="Cliente" disabled />
                         </div>
                     </div>
                     <div class="form-group row">
@@ -146,12 +104,8 @@
                         </div>
                     </div>
                     <div class="d-flex mt-4">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-pencil-square me-1"></i> Actualizar
-                        </button>
-                        <a href="<?php echo BASE_URL; ?>users" class="btn btn-secondary">
-                            Cancelar
-                        </a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-pencil-square me-1"></i> Actualizar</button>
+                        <a href="<?php echo BASE_URL; ?>clients" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </div>
             </form>
@@ -159,8 +113,6 @@
     </div>
     <script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="<?php echo BASE_URL; ?>view/function/users.js"></script>
-    <script>
-        edit_user();
-    </script>
+    <script> edit_user(); </script>
 </body>
 </html>

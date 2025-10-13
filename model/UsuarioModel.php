@@ -44,6 +44,35 @@ class UsuarioModel {
         return $num_rows;
     }
 
+    public function mostrarProveedores(){
+        $arr_proveedores = array();
+        $consulta = "SELECT * FROM persona WHERE rol = 'proveedor'";
+        $sql = $this->conexion->query($consulta);
+
+        if (!$sql) {
+            error_log("Error en query(): " . $this->conexion->error);
+            return $arr_proveedores;
+        }
+        while ($objeto = $sql->fetch_object()){
+            array_push($arr_proveedores, $objeto);
+        }
+        return $arr_proveedores;
+    }
+
+    public function mostrarClientes(){
+        $arr_clientes = array();
+        $consulta = "SELECT * FROM persona WHERE rol = 'cliente'";
+        $sql = $this->conexion->query($consulta);
+
+        if (!$sql) {
+            error_log("Error en query(): " . $this->conexion->error);
+            return $arr_clientes;
+        }
+        while ($objeto = $sql->fetch_object()){
+            array_push($arr_clientes, $objeto);
+        }
+        return $arr_clientes;
+    }
     public function buscarPersonaPorNroIdentidad($nro_identidad) {
         $consulta = "SELECT id, razon_social, password FROM persona WHERE nro_identidad = ? LIMIT 1";
         $stmt = $this->conexion->prepare($consulta);
@@ -173,21 +202,58 @@ class UsuarioModel {
     */
 
     public function ver($id){
-        $consulta = "SELECT * FROM persona WHERE id= '$id'";
-        $sql = $this->conexion->query($consulta);
-        return $sql->fetch_object();
+        $consulta = "SELECT * FROM persona WHERE id = ?";
+        $stmt = $this->conexion->prepare($consulta);
+        if (!$stmt) {
+            error_log("Error en prepare(): " . $this->conexion->error);
+            return null;
+        }
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        if ($resultado && $resultado->num_rows > 0) {
+            $persona = $resultado->fetch_object();
+            $stmt->close();
+            return $persona;
+        }
+        $stmt->close();
+        return null;
     }
 
-    public function actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol){
-        $consulta = "UPDATE persona SET nro_identidad='$nro_identidad', razon_social='$razon_social', telefono='$telefono', correo='$correo', departamento='$departamento', provincia='$provincia', distrito='$distrito', cod_postal='$cod_postal', direccion='$direccion', rol='$rol' WHERE id='$id_persona'";
-        $sql = $this->conexion->query($consulta);
-        return $sql;
+    public function actualizar($id_persona, $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $estado = null){
+        if ($estado !== null) {
+            $consulta = "UPDATE persona SET nro_identidad = ?, razon_social = ?, telefono = ?, correo = ?, departamento = ?, provincia = ?, distrito = ?, cod_postal = ?, direccion = ?, rol = ?, estado = ? WHERE id = ?";
+            $stmt = $this->conexion->prepare($consulta);
+            if (!$stmt) {
+                error_log("Error en prepare(): " . $this->conexion->error);
+                return false;
+            }
+            $stmt->bind_param("ssssssssssii", $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $estado, $id_persona);
+        } else {
+            $consulta = "UPDATE persona SET nro_identidad = ?, razon_social = ?, telefono = ?, correo = ?, departamento = ?, provincia = ?, distrito = ?, cod_postal = ?, direccion = ?, rol = ? WHERE id = ?";
+            $stmt = $this->conexion->prepare($consulta);
+            if (!$stmt) {
+                error_log("Error en prepare(): " . $this->conexion->error);
+                return false;
+            }
+            $stmt->bind_param("ssssssssssi", $nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $id_persona);
+        }
+        $resultado = $stmt->execute();
+        $stmt->close();
+        return $resultado;
     }
 
     public function eliminar($id_persona){
-        $consulta = "DELETE FROM persona WHERE  id = '$id_persona'";
-        $sql = $this->conexion->query($consulta);
-        return $sql;
+        $consulta = "DELETE FROM persona WHERE id = ?";
+        $stmt = $this->conexion->prepare($consulta);
+        if (!$stmt) {
+            error_log("Error en prepare(): " . $this->conexion->error);
+            return false;
+        }
+        $stmt->bind_param("i", $id_persona);
+        $resultado = $stmt->execute();
+        $stmt->close();
+        return $resultado;
     }
 
 }
