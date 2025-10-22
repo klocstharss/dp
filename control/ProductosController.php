@@ -75,9 +75,9 @@ if ($tipo == "mostrar_productos") {
     $productos = $objProducto->mostrarProductos();
     $arrProduct = array();
     if (count($productos)) {
-        foreach ($productos as $producto){
+        foreach ($productos as $producto) {
             $categoria = $objCategoria->ver($producto->id_categoria);
-           if ($categoria && property_exists($categoria, 'nombre')) {
+            if ($categoria && property_exists($categoria, 'nombre')) {
                 $producto->categoria = $categoria->nombre;
             } else {
                 $producto->categoria = "Sin categoria";
@@ -113,6 +113,7 @@ if ($tipo == "ver") {
 
 
 if ($tipo == "actualizar") {
+
     $id_producto = $_POST['id_producto'];
     $codigo = $_POST['codigo'];
     $nombre = $_POST['nombre'];
@@ -123,8 +124,24 @@ if ($tipo == "actualizar") {
     $fecha_vencimiento = $_POST['fecha_vencimiento'];
     $id_proveedor = $_POST['id_proveedor'];
 
-    // Handle image upload for update
-    $imagen = null;
+    if ($id_producto == "" || $codigo == "" || $nombre == "" || $detalle == "" || $precio == "" || $stock == "" || $id_categoria == "" || $fecha_vencimiento == "" || $id_proveedor == "") {
+        $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
+        echo json_encode($arrResponse);
+        exit;
+    }
+
+    // Obtener información del producto antes de actualizar
+    $producto = $objProducto->ver($id_producto);
+    if (!$producto) {
+        $arrResponse = array('status' => false, 'msg' => 'Error, producto no existe');
+        echo json_encode($arrResponse);
+        exit;
+    }
+
+    // Inicializar la variable imagen con la imagen actual del producto
+    $imagen = $producto->imagen;
+
+    // Verificar si se ha subido una nueva imagen
     if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['imagen'];
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
@@ -151,28 +168,30 @@ if ($tipo == "actualizar") {
             echo json_encode(['status' => false, 'msg' => 'No se pudo guardar la imagen']);
             exit;
         }
+
+        // Eliminar imagen anterior si existe
+        if (!empty($producto->imagen) && file_exists("../" . $producto->imagen)) {
+            @unlink("../" . $producto->imagen);
+        }
+
+        // Actualizar la variable imagen con la nueva ruta
         $imagen = $rutaRelativa;
     }
 
-    if ($id_producto == "" || $codigo == "" || $nombre == "" || $detalle == "" || $precio == "" || $stock == "" || $id_categoria == "" || $fecha_vencimiento == "" || $id_proveedor == "") {
-        $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
+    // Actualizar el producto en la base de datos
+    $actualizar = $objProducto->actualizar($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $id_categoria, $fecha_vencimiento, $id_proveedor, $imagen);
+
+    if ($actualizar) {
+        $arrResponse = array('status' => true, 'msg' => 'Actualizado correctamente');
     } else {
-        $existeID = $objProducto->ver($id_producto);
-        if (!$existeID) {
-            $arrResponse = array('status' => false, 'msg' => 'Error, producto no existe');
-            echo json_encode($arrResponse);
-            exit;
-        } else {
-            $actualizar = $objProducto->actualizar($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $id_categoria, $fecha_vencimiento, $id_proveedor, $imagen);
-            if ($actualizar) {
-                $arrResponse = array('status' => true, 'msg' => 'Actualizado correctamente');
-            } else {
-                $arrResponse = array('status' => false, 'msg' => $actualizar);
-            }
-            echo json_encode($arrResponse);
-            exit;
+        // Si falló la actualización, eliminar la nueva imagen si se subió
+        if (isset($rutaFisica) && file_exists($rutaFisica)) {
+            @unlink($rutaFisica);
         }
+        $arrResponse = array('status' => false, 'msg' => 'Error al actualizar producto');
     }
+    echo json_encode($arrResponse);
+    exit;
 }
 
 if ($tipo == "eliminar") {
@@ -180,8 +199,15 @@ if ($tipo == "eliminar") {
     if ($id_producto == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, id vacio');
     } else {
+        // Obtener información del producto antes de eliminarlo
+        $producto = $objProducto->ver($id_producto);
+
         $eliminar = $objProducto->eliminar($id_producto);
         if ($eliminar) {
+            // Eliminar la imagen asociada si existe
+            if ($producto && !empty($producto->imagen) && file_exists("../" . $producto->imagen)) {
+                @unlink("../" . $producto->imagen);
+            }
             $arrResponse = array('status' => true, 'msg' => 'Producto eliminado');
         } else {
             $arrResponse = array('status' => false, 'msg' => 'Error al eliminar producto');

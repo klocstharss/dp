@@ -8,14 +8,30 @@ function validar_form(tipo) {
     let fecha_vencimiento = document.getElementById("fecha_vencimiento").value;
     let id_proveedor = document.getElementById("id_proveedor").value;
 
-    if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "" || id_proveedor == "") {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Campos vacíos',
-            text: 'Por favor, complete todos los campos requeridos',
-            confirmButtonText: 'Entendido'
-        });
-        return;
+    // Validación para nuevo producto (requiere imagen)
+    if (tipo == "nuevo") {
+        let imagen = document.getElementById("imagen").value;
+        if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "" || id_proveedor == "" || imagen == "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos vacíos',
+                text: 'Por favor, complete todos los campos requeridos',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
+    } 
+    // Validación para edición (no requiere imagen)
+    else if (tipo == "actualizar") {
+        if (codigo == "" || nombre == "" || detalle == "" || precio == "" || stock == "" || id_categoria == "" || fecha_vencimiento == "" || id_proveedor == "") {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos vacíos',
+                text: 'Por favor, complete todos los campos requeridos',
+                confirmButtonText: 'Entendido'
+            });
+            return;
+        }
     }
     if (tipo == "nuevo") {
         registrarProducto();
@@ -183,6 +199,8 @@ async function edit_producto() {
             });
             return;
         }
+
+        // Cargar datos del producto en el formulario
         document.getElementById('codigo').value = json.data.codigo;
         document.getElementById('nombre').value = json.data.nombre;
         document.getElementById('detalle').value = json.data.detalle;
@@ -191,6 +209,17 @@ async function edit_producto() {
         document.getElementById('id_categoria').value = json.data.id_categoria;
         document.getElementById('fecha_vencimiento').value = json.data.fecha_vencimiento;
         document.getElementById('id_proveedor').value = json.data.id_proveedor;
+
+        // Mostrar imagen actual si existe
+        if (json.data.imagen) {
+            const currentImageContainer = document.getElementById('current-image-container');
+            const currentImage = document.getElementById('current-image');
+
+            if (currentImageContainer && currentImage) {
+                currentImage.src = base_url + json.data.imagen;
+                currentImageContainer.style.display = 'block';
+            }
+        }
 
     } catch (error) {
         console.log('oops, ocurrio un error' + error);
@@ -208,6 +237,33 @@ if (document.querySelector("#frm_edit_producto")) {
 async function actualizarProducto() {
     const frm_edit_producto = document.querySelector("#frm_edit_producto")
     const datos = new FormData(frm_edit_producto);
+    
+    // Verificar si se ha seleccionado una nueva imagen
+    const imagenInput = document.getElementById("imagen");
+    if (imagenInput.files.length === 0) {
+        // Si no se seleccionó una imagen, obtener la imagen actual del producto
+        const id_producto = document.getElementById("id_producto").value;
+        try {
+            const tempDatos = new FormData();
+            tempDatos.append("id_producto", id_producto);
+            
+            const respuestaImagen = await fetch(base_url + 'control/productosController.php?tipo=ver', {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                body: tempDatos
+            });
+            
+            const jsonImagen = await respuestaImagen.json();
+            if (jsonImagen.status && jsonImagen.data.imagen) {
+                // Agregar la imagen actual al FormData para conservarla
+                datos.append("imagen_actual", jsonImagen.data.imagen);
+            }
+        } catch (error) {
+            console.error("Error al obtener la imagen actual:", error);
+        }
+    }
+    
     let respuesta = await fetch(base_url + 'control/productosController.php?tipo=actualizar', {
         method: 'POST',
         mode: 'cors',
@@ -227,7 +283,14 @@ async function actualizarProducto() {
         Swal.fire({
             icon: 'success',
             title: 'Éxito',
-            text: json.msg
+            text: json.msg,
+            showConfirmButton: true,
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Recargar la página para mostrar los cambios
+                location.reload();
+            }
         });
     }
 }
