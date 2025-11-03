@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ccorimanya</title>
+    <link rel="icon" href="view/img/buscar.png" type="image/png">
 
+    <link rel="icon" href="<?php echo BASE_URL; ?>view/img/log.jpg" type="image/jpeg">
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
 
@@ -75,7 +77,7 @@
                                     <li>
                                         <hr class="dropdown-divider">
                                     </li>
-                                    <li><a class="dropdown-item" href="login">Cerrar Sesion</a></li>
+                                    <li><button class="dropdown-item" id="logoutBtn">Cerrar Sesion</button></li>
                                 </ul>
                             </li>
 
@@ -86,5 +88,6 @@
             </div>
         </nav>
     </header>
+    <script src="<?php echo BASE_URL; ?>view/function/users.js"></script>
 </body>
 </html>

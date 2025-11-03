@@ -475,3 +475,29 @@ async function eliminarUsuario(id) {
         }
     });
 }
+
+async function cerrar_sesion() {
+    try {
+        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=cerrar_sesion', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        let json = await respuesta.json();
+        if (json.status) {
+            window.location.href = base_url + 'login';
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: json.msg
+            });
+        }
+    } catch (error) {
+        console.log("Error al cerrar sesión: " + error);
+    }
+}
+
+if (document.getElementById('logoutBtn')) {
+    document.getElementById('logoutBtn').addEventListener('click', cerrar_sesion);
+}

@@ -208,3 +208,10 @@ if($tipo == "eliminar"){
         exit;
     }
 }
+
+if($tipo == "cerrar_sesion"){
+    session_start();
+    session_destroy();
+    $arrResponse = array('status' => true, 'msg' => 'Sesión cerrada correctamente');
+    echo json_encode($arrResponse);
+}
