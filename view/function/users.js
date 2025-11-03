@@ -96,7 +96,7 @@ async function iniciar_sesion() {
     }
     try {
         const datos = new FormData(frm_login);
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=iniciar_sesion', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=iniciar_sesion', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -121,7 +121,7 @@ async function iniciar_sesion() {
 
 async function view_users() {
     try {
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=mostrar_usuarios', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=mostrar_usuarios', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
@@ -156,7 +156,7 @@ async function view_users() {
 
 async function view_clients() {
     try {
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=mostrar_clientes', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=mostrar_clientes', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
@@ -191,7 +191,7 @@ async function view_clients() {
 
 async function view_proveedores() {
     try {
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=mostrar_proveedores', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=mostrar_proveedores', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
@@ -352,7 +352,7 @@ async function edit_user() {
         const datos = new FormData();
         datos.append('id_persona', id_persona);
 
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=ver', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=ver', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -397,7 +397,7 @@ if (document.querySelector('#frm_edit_user')) {
 
 async function actualizarUsuario() {
     const datos = new FormData(frm_edit_user);
-    let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=actualizar', {
+    let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=actualizar', {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -436,7 +436,7 @@ async function eliminarUsuario(id) {
             try {
                 const datos = new FormData();
                 datos.append('id_persona', id);
-                let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=eliminar', {
+                let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=eliminar', {
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
@@ -478,7 +478,7 @@ async function eliminarUsuario(id) {
 
 async function cerrar_sesion() {
     try {
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=cerrar_sesion', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=cerrar_sesion', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
