@@ -246,7 +246,7 @@ async function edit_user() {
         id = queryId;
     }
     try {
-        let respuesta = await fetch(base_url + 'control/usuarioController.php?tipo=obtener_usuario', {
+        let respuesta = await fetch(base_url + 'control/UsuarioController.php?tipo=obtener_usuario', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',

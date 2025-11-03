@@ -33,7 +33,7 @@ async function registrarCategoria() {
     try {
         const frm_categorie = document.querySelector("#frm_categorie");
         const datos = new FormData(frm_categorie);
-        let respuesta = await fetch(base_url + 'control/categoriaController.php?tipo=registrar', {
+        let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=registrar', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -76,7 +76,7 @@ function cancelar() {
 
 async function view_categoria() {
     try {
-        let respuesta = await fetch(base_url + 'control/categoriaController.php?tipo=mostrar_categorias', {
+        let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=mostrar_categorias', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache'
@@ -115,7 +115,7 @@ async function edit_categoria() {
         const datos = new FormData();
         datos.append('id_categoria', id_categoria);
 
-        let respuesta = await fetch(base_url + 'control/categoriaController.php?tipo=ver', {
+        let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=ver', {
             method: 'POST',
             mode: 'cors',
             cache: 'no-cache',
@@ -150,7 +150,7 @@ if (document.querySelector("#frm_edit_categorie")) {
 async function actualizarCategoria() {
     const frm_edit_categorie = document.querySelector("#frm_edit_categorie")
     const datos = new FormData(frm_edit_categorie);
-    let respuesta = await fetch(base_url + 'control/categoriaController.php?tipo=actualizar', {
+    let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=actualizar', {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
@@ -189,7 +189,7 @@ async function eliminar(id) {
             try {
                 const datos = new FormData();
                 datos.append('id_categoria', id)
-                let respuesta = await fetch(base_url + 'control/categoriaController.php?tipo=eliminar', {
+                let respuesta = await fetch(base_url + 'control/CategoriaController.php?tipo=eliminar', {
                     method: 'POST',
                     mode: 'cors',
                     cache: 'no-cache',
