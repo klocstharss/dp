@@ -1,4 +1,17 @@
 <?php
+// Configurar cabeceras CORS
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
+header("Access-Control-Allow-Credentials: true");
+
+// Responder a solicitudes preflight
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
 require_once("../model/ProductsModel.php");
 require_once("../model/CategoriaModel.php");
 require_once("../model/UsuarioModel.php");
