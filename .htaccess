@@ -1,20 +1,3 @@
 RewriteEngine ON
 Options All -Indexes
-
-# Configuración CORS para todo el sitio
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "https://gedion.serviciosvirtuales.com.pe"
-    Header set Access-Control-Allow-Methods "GET, POST, OPTIONS"
-    Header set Access-Control-Allow-Headers "Content-Type, Authorization"
-</IfModule>
-
-# Regla de reescritura para URLs amigables
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([a-zA-Z0-9/ñÑ-]+)$ index.php?views=$1 [L,QSA]
-
-# Prevenir acceso a archivos sensibles
-<FilesMatch "^.(htaccess|htpasswd|ini|log|sh|inc|bak)$">
-    Order Allow,Deny
-    Deny from all
-</FilesMatch>
+RewriteRule ^([a-zA-Z0-9/ñÑ-]+)$ index.php?views=$1

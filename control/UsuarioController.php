@@ -1,16 +1,4 @@
 <?php
-// Configurar cabeceras CORS
-header('Access-Control-Allow-Origin: https://gedion.serviciosvirtuales.com.pe');
-header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
-header('Content-Type: application/json');
-
-// Si la solicitud es OPTIONS, terminar aquí
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
-
 require_once("../model/UsuarioModel.php");
 
 $objPersona = new UsuarioModel();
@@ -219,11 +207,4 @@ if($tipo == "eliminar"){
         echo json_encode($arrResponse);
         exit;
     }
-}
-
-if($tipo == "cerrar_sesion"){
-    session_start();
-    session_destroy();
-    $arrResponse = array('status' => true, 'msg' => 'Sesión cerrada correctamente');
-    echo json_encode($arrResponse);
 }
