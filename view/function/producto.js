@@ -347,11 +347,11 @@ async function cargar_categorias() {
         mode: 'cors',
         cache: 'no-cache'
     });
-    json = await respuesta.json();
+    let json = await respuesta.json();
     let contenido = '';
-    if (json.status && json.data) {
+    if (json && json.length > 0) {
         contenido += '<option value="">Seleccione una categoria</option>';
-        json.data.forEach(categoria => {
+        json.forEach(categoria => {
             contenido += '<option value="' + categoria.id + '">' + categoria.nombre + '</option>';
         });
     } else {
