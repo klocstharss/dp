@@ -63,9 +63,22 @@ class ProductsModel
 
     public function ver($id)
     {
+        // Escapar el ID para prevenir inyección SQL
+        $id = $this->conexion->real_escape_string($id);
+        
+        // Verificar que el ID sea válido
+        if (!is_numeric($id) || $id <= 0) {
+            return null;
+        }
+        
         $consulta = "SELECT * FROM producto WHERE id = '$id'";
         $sql = $this->conexion->query($consulta);
-        return $sql->fetch_object();
+        
+        if ($sql && $sql->num_rows > 0) {
+            return $sql->fetch_object();
+        } else {
+            return null;
+        }
     }
 
     public function actualizar($id_producto, $codigo, $nombre, $detalle, $precio, $stock, $id_categoria, $fecha_vencimiento, $id_proveedor, $imagen = null)
@@ -80,10 +93,63 @@ class ProductsModel
         return $sql;
     }
 
+    public function verificarRelaciones($id_producto)
+    {
+        // Escapar el ID para prevenir inyección SQL
+        $id_producto = $this->conexion->real_escape_string($id_producto);
+        
+        // Verificar que el ID sea válido
+        if (!is_numeric($id_producto) || $id_producto <= 0) {
+            return false;
+        }
+        
+        // Verificar si el producto está siendo utilizado en la tabla compras
+        $consulta_compras = "SELECT COUNT(*) as total FROM compras WHERE id_producto = '$id_producto'";
+        $resultado_compras = $this->conexion->query($consulta_compras);
+        $compras = $resultado_compras->fetch_assoc();
+        
+        // Verificar si el producto está siendo utilizado en la tabla detalle_venta
+        $consulta_detalle_venta = "SELECT COUNT(*) as total FROM detalle_venta WHERE id_producto = '$id_producto'";
+        $resultado_detalle_venta = $this->conexion->query($consulta_detalle_venta);
+        $detalle_venta = $resultado_detalle_venta->fetch_assoc();
+        
+        // Devolver true si hay relaciones, false si no las hay
+        return ($compras['total'] > 0 || $detalle_venta['total'] > 0);
+    }
+    
     public function eliminar($id_producto)
     {
-        $consulta = "DELETE FROM producto WHERE id='$id_producto'";
-        $sql = $this->conexion->query($consulta);
-        return $sql;
+        // Escapar el ID para prevenir inyección SQL
+        $id_producto = $this->conexion->real_escape_string($id_producto);
+
+        // Verificar que el ID sea válido
+        if (!is_numeric($id_producto) || $id_producto <= 0) {
+            return false;
+        }
+
+        // Iniciar transacción
+        $this->conexion->autocommit(false);
+
+        try {
+            $consulta = "DELETE FROM producto WHERE id='$id_producto'";
+            $sql = $this->conexion->query($consulta);
+
+            if ($sql) {
+                // Confirmar la transacción
+                $this->conexion->commit();
+                return true;
+            } else {
+                // Revertir la transacción
+                $this->conexion->rollback();
+                return false;
+            }
+        } catch (Exception $e) {
+            // Revertir la transacción en caso de error
+            $this->conexion->rollback();
+            return false;
+        } finally {
+            // Restaurar el modo autocommit
+            $this->conexion->autocommit(true);
+        }
     }
 }

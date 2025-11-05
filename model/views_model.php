@@ -7,7 +7,7 @@ $white_list = [
     "productos-edit", "categoria-edit",
     // Nuevas vistas para clientes y proveedores
     "clients", "new-client", "edit-client",
-    "proveedores", "new-proveedor", "edit-proveedor"
+    "proveedores", "new-proveedor", "edit-proveedor","productos-lista"
 ];
         if (in_array($view, $white_list)) {
             if (is_file("./view/".$view.".php")) {

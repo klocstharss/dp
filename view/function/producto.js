@@ -110,6 +110,86 @@ async function view_producto() {
 
         if (json.status && json.data && json.data.length > 0) {
             let html = '';
+            json.data.forEach((producto) => {
+                let imagenHtml = '';
+                if (producto.imagen) {
+                    imagenHtml = `<img src="${base_url}${producto.imagen}" alt="${producto.nombre}" class="product-image">`;
+                } else {
+                    imagenHtml = '<div class="no-image"><i class="bi bi-image"></i></div>';
+                }
+
+                const precioFormateado = producto.precio ? `S/ ${parseFloat(producto.precio).toFixed(2)}` : 'N/A';
+
+                const categoriaHtml = producto.categoria ? producto.categoria : 'Sin categoría';
+                const proveedorHtml = producto.proveedor ? producto.proveedor : 'Sin proveedor';
+
+                html += `
+                <div class="product-card">
+                    <div class="product-image-container">
+                        ${imagenHtml}
+                    </div>
+                    <div class="product-body">
+                        <h5 class="product-title">${producto.nombre || ''}</h5>
+                        
+                        <div class="price-container">
+                            <span class="price-badge">${precioFormateado}</span>
+                        </div>
+                        
+                        <div class="product-tags">
+                            <span class="tag">${categoriaHtml}</span>
+                            <span class="tag">${proveedorHtml}</span>
+                        </div>
+                        
+
+                        
+                        <div class="product-actions">
+                            <button onclick="verDetalles(${producto.id})" class="btn btn-primary">
+                                <i class="bi bi-eye"></i> Ver más detalles
+                            </button>
+                            <button onclick="agregarCarrito(${producto.id})" class="btn btn-success">
+                                <i class="bi bi-cart-plus"></i> Agregar al carrito
+                            </button>
+                           
+                        </div>
+                    </div>
+                </div>`;
+            });
+            document.getElementById('content_productos').innerHTML = html;
+        } else {
+            document.getElementById('content_productos').innerHTML = '<div class="text-center py-5"><div class="text-muted"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay productos disponibles</div></div>';
+        }
+    } catch (error) {
+        console.error("Error al cargar productos:", error);
+        document.getElementById('content_productos').innerHTML = '<tr><td colspan="10" class="text-center py-4"><div class="text-danger"><i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>Error al cargar los productos</div></td></tr>';
+    }
+}
+
+if (document.getElementById('content_productos')) {
+    // Determinar si estamos en la vista de tabla o de tarjetas
+    const isTableView = document.querySelector('table') !== null;
+    
+    if (isTableView) {
+        view_producto_tabla();
+    } else {
+        view_producto();
+    }
+}
+
+async function view_producto_tabla() {
+    try {
+        let respuesta = await fetch(base_url + 'control/ProductosController.php?tipo=mostrar_productos', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache'
+        });
+        if (!respuesta.ok) {
+            throw new Error(`HTTP error! status: ${respuesta.status}`);
+        }
+
+        let json = await respuesta.json();
+
+        if (json.status && json.data && json.data.length > 0) {
+            let html = '';
             json.data.forEach((producto, index) => {
                 let imagenHtml = '';
                 if (producto.imagen) {
@@ -172,10 +252,6 @@ async function view_producto() {
         console.error("Error al cargar productos:", error);
         document.getElementById('content_productos').innerHTML = '<tr><td colspan="10" class="text-center py-4"><div class="text-danger"><i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>Error al cargar los productos</div></td></tr>';
     }
-}
-
-if (document.getElementById('content_productos')) {
-    view_producto();
 }
 
 async function edit_producto() {
@@ -309,21 +385,28 @@ async function eliminar(id) {
         if (result.isConfirmed) {
             try {
                 const datos = new FormData();
-                datos.append('id_producto', id)
-                let respuesta = await fetch(base_url + 'control/ProductosController.php?tipo=eliminar', {
-                    method: 'POST',
-                    mode: 'cors',
-                    cache: 'no-cache',
+                datos.append("id_producto", id);
+                let respuesta = await fetch(base_url + "control/ProductosController.php?tipo=eliminar", {
+                    method: "POST",
+                    mode: "cors",
+                    cache: "no-cache",
                     body: datos
                 });
-                json = await respuesta.json();
+                let json = await respuesta.json();
                 if (json.status) {
                     Swal.fire({
                         icon: "success",
                         title: "Eliminado",
                         text: json.msg
                     }).then(() => {
-                        view_producto();
+                        // Determinar si estamos en la vista de tabla o de tarjetas
+                        const isTableView = document.querySelector("table") !== null;
+                        
+                        if (isTableView) {
+                            view_producto_tabla();
+                        } else {
+                            view_producto();
+                        }
                     });
 
                 } else {
@@ -335,7 +418,12 @@ async function eliminar(id) {
                 }
 
             } catch (error) {
-                console.log('oops, ocurrio un error' + error);
+                console.error("Error al eliminar producto:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Ocurrió un error al intentar eliminar el producto. Inténtelo de nuevo más tarde."
+                });
             }
         }
     });
@@ -381,4 +469,19 @@ async function cargar_proveedores() {
     //console.log(contenido);
     document.getElementById("id_proveedor").innerHTML = contenido;
 
+}
+
+// Función para ver los detalles de un producto
+function verDetalles(id) {
+    window.location.href = base_url + "productos-detalle/" + id;
+}
+
+// Función para agregar un producto al carrito
+function agregarCarrito(id) {
+    Swal.fire({
+        icon: "success",
+        title: "Producto agregado",
+        text: "El producto ha sido agregado al carrito correctamente",
+        confirmButtonText: "OK"
+    });
 }

@@ -208,24 +208,49 @@ if ($tipo == "actualizar") {
 }
 
 if ($tipo == "eliminar") {
+    // Desactivar la visualización de errores para evitar que se mezclen con JSON
+    error_reporting(0);
+    ini_set('display_errors', 0);
+    
+    // Verificar que se recibió el ID
+    if (!isset($_POST['id_producto']) || empty($_POST['id_producto'])) {
+        $arrResponse = array('status' => false, 'msg' => 'Error: ID de producto no proporcionado');
+        header('Content-Type: application/json');
+        echo json_encode($arrResponse);
+        exit;
+    }
+    
     $id_producto = $_POST['id_producto'];
-    if ($id_producto == "") {
-        $arrResponse = array('status' => false, 'msg' => 'Error, id vacio');
-    } else {
+    
+    try {
         // Obtener información del producto antes de eliminarlo
         $producto = $objProducto->ver($id_producto);
-
+        
         $eliminar = $objProducto->eliminar($id_producto);
-        if ($eliminar) {
+        
+        // Verificar si se eliminó correctamente
+        if ($eliminar === "relaciones") {
+            $arrResponse = array('status' => false, 'msg' => 'No se puede eliminar el producto porque está siendo utilizado en compras o ventas. Primero elimine los registros relacionados.');
+        } else if ($eliminar) {
             // Eliminar la imagen asociada si existe
             if ($producto && !empty($producto->imagen) && file_exists("../" . $producto->imagen)) {
                 @unlink("../" . $producto->imagen);
             }
-            $arrResponse = array('status' => true, 'msg' => 'Producto eliminado');
+            $arrResponse = array('status' => true, 'msg' => 'Producto eliminado correctamente');
         } else {
-            $arrResponse = array('status' => false, 'msg' => 'Error al eliminar producto');
+            $arrResponse = array('status' => false, 'msg' => 'Error al eliminar el producto. Inténtelo de nuevo.');
         }
-        echo json_encode($arrResponse);
-        exit;
+    } catch (Exception $e) {
+        // Verificar si es un error de clave externa
+        if (strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
+            $arrResponse = array('status' => false, 'msg' => 'No se puede eliminar el producto porque está siendo utilizado en compras o ventas. Primero elimine los registros relacionados.');
+        } else {
+            $arrResponse = array('status' => false, 'msg' => 'Error: ' . $e->getMessage());
+        }
     }
+    
+    // Enviar respuesta JSON
+    header('Content-Type: application/json');
+    echo json_encode($arrResponse);
+    exit;
 }
