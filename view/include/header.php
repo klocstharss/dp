@@ -63,6 +63,10 @@
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-cart3"></i>
+                            <a class="nav-link" href="ejemplo">Vista Cliente</a>
+                        </li>
+                        <li class="nav-item">
+                            <i class="bi bi-cart3"></i>
                             <a class="nav-link" href="#">Sales</a>
                         </li>
 
