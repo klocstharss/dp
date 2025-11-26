@@ -84,8 +84,10 @@ if ($tipo == 'registrar') {
 }
 
 if ($tipo == "mostrar_productos") {
+    error_log("Iniciando mostrar_productos");
     $respuesta = array('status' => false, 'msg' => 'fallo el controlador');
     $productos = $objProducto->mostrarProductos();
+    error_log("Productos obtenidos: " . count($productos));
     $arrProduct = array();
     if (count($productos)) {
         foreach ($productos as $producto) {
@@ -106,6 +108,7 @@ if ($tipo == "mostrar_productos") {
         }
         $respuesta = array('status' => true, 'msg' => '', 'data' => $arrProduct);
     }
+    error_log("Respuesta final: " . json_encode($respuesta));
     header('Content-Type: application/json');
     echo json_encode($respuesta);
     exit;
@@ -211,7 +214,7 @@ if ($tipo == "eliminar") {
     // Desactivar la visualización de errores para evitar que se mezclen con JSON
     error_reporting(0);
     ini_set('display_errors', 0);
-    
+
     // Verificar que se recibió el ID
     if (!isset($_POST['id_producto']) || empty($_POST['id_producto'])) {
         $arrResponse = array('status' => false, 'msg' => 'Error: ID de producto no proporcionado');
@@ -219,15 +222,15 @@ if ($tipo == "eliminar") {
         echo json_encode($arrResponse);
         exit;
     }
-    
+
     $id_producto = $_POST['id_producto'];
-    
+
     try {
         // Obtener información del producto antes de eliminarlo
         $producto = $objProducto->ver($id_producto);
-        
+
         $eliminar = $objProducto->eliminar($id_producto);
-        
+
         // Verificar si se eliminó correctamente
         if ($eliminar === "relaciones") {
             $arrResponse = array('status' => false, 'msg' => 'No se puede eliminar el producto porque está siendo utilizado en compras o ventas. Primero elimine los registros relacionados.');
@@ -248,9 +251,25 @@ if ($tipo == "eliminar") {
             $arrResponse = array('status' => false, 'msg' => 'Error: ' . $e->getMessage());
         }
     }
-    
+
     // Enviar respuesta JSON
     header('Content-Type: application/json');
     echo json_encode($arrResponse);
+    exit;
+}
+if ($tipo == "buscar_productos_venta") {
+    $dato = $_POST['dato'];
+    $respuesta = array('status' => false, 'msg' => 'fallo en el controlador', 'data' => '');
+    $productos = $objProducto->buscarProductoByNombreOrCodigo($dato);
+    $arr_productos = array();
+    if (count($productos)) {
+        foreach ($productos as $producto) {
+            $categoria = $objCategoria->ver($producto->id_categoria);
+            $producto->categoria = $categoria->nombre;
+            array_push($arr_productos, $producto);
+        }
+        $respuesta = array('status' => true, 'msg' => '', 'data' => $arr_productos);
+    }
+    echo json_encode($respuesta);
     exit;
 }

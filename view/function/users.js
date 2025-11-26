@@ -48,22 +48,30 @@ async function registrarUsuario() {
             body: datos
         });
         let json = await respuesta.json();
-        if (json.msg) {
-            Swal.fire({
-                icon: "success",
-                title: "Éxito",
-                text: json.msg
-            });
-            document.getElementById('frm_user').reset();
-        } else {
+
+        // CORRECTO: verificar 'status', no solo 'msg'
+        if (json.status === false) {
             Swal.fire({
                 icon: "error",
                 title: "Error",
                 text: json.msg
             });
+            document.getElementById('frm_user').reset();
+        } else if (json.status === true) {
+            Swal.fire({
+                icon: "success",
+                title: "Éxito",
+                text: json.msg
+            });
+            document.getElementById('frm_user').reset(); // opcional: limpiar también en éxito
         }
     } catch (error) {
-        console.log("Error al registrar categoría: " + error);
+        console.log("Error al conectar con el servidor: " + error);
+        Swal.fire({
+            icon: "error",
+            title: "Error de conexión",
+            text: "No se pudo conectar con el servidor"
+        });
     }
 }
 

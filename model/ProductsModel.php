@@ -53,10 +53,15 @@ class ProductsModel
     {
         $arr_productos = array();
         $consulta = "SELECT * FROM producto";
+        error_log("Consulta SQL: " . $consulta);
         $sql = $this->conexion->query($consulta);
+        if (!$sql) {
+            error_log("Error en la consulta: " . $this->conexion->error);
+        }
         while ($objeto = $sql->fetch_object()) {
             array_push($arr_productos, $objeto);
         }
+        error_log("Número de productos encontrados: " . count($arr_productos));
         return $arr_productos;
     }
 
@@ -152,4 +157,14 @@ class ProductsModel
             $this->conexion->autocommit(true);
         }
     }
+    public function  buscarProductoByNombreOrCodigo($dato) {
+        $arr_productos = array();
+        $consulta = "SELECT * FROM producto WHERE nombre LIKE '%$dato%' OR codigo LIKE '$dato%' OR detalle LIKE '%$dato%'";
+        $sql = $this->conexion->query($consulta);
+        while ($objeto = $sql->fetch_object()) {
+            array_push($arr_productos, $objeto);
+        }
+        return $arr_productos;
+
+    }    
 }

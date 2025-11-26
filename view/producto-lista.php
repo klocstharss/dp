@@ -181,6 +181,7 @@
                         <th>Categoría</th>
                         <th>Proveedor</th>
                         <th class="text-center">Vencimiento</th>
+                        <th class="text-center">Codigo Barra</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -192,6 +193,8 @@
     </div>
 
     <script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- La variable base_url ya está definida en el header -->
+    <script src="<?php echo BASE_URL; ?>view/function/JsBarcode.all.min.js"></script>
     <script src="<?php echo BASE_URL; ?>view/function/producto.js"></script>
 </body>
 </html>

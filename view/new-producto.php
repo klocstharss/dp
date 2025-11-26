@@ -251,6 +251,16 @@
                                     <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre completo del producto" required />
                                 </div>
                             </div>
+                            <div class="col-md-6">
+                                <label for="codigo_barra" class="form-label">
+                                    <i class="bi bi-upc-scan"></i>
+                                    Código de Barra
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                    <input type="text" class="form-control" id="codigo_barra" name="codigo_barra" placeholder="Código de barras del producto" />
+                                </div>
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-12">

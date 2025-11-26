@@ -43,11 +43,7 @@
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-box-seam"></i>
-                            <a class="nav-link" href="<?= BASE_URL ?>new-producto">Products</a>
-                        </li>
-                        <li class="nav-item">
-                            <i class="bi bi-box-seam"></i>
-                            <a class="nav-link" href="<?= BASE_URL ?>productos-lista">Vista Cliente</a>
+                            <a class="nav-link" href="<?= BASE_URL ?>producto-lista">lista producto</a>
                         </li>
                         <li class="nav-item">
                             <i class="bi bi-menu-button-wide-fill"></i>

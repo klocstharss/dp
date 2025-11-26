@@ -18,7 +18,6 @@ $objPersona = new UsuarioModel();
 
 $tipo = $_GET['tipo'];
 if ($tipo == "registrar") {
-    //print_r($_POST);
     $nro_identidad = $_POST['nro_identidad'];
     $razon_social = $_POST['razon_social'];
     $telefono = $_POST['telefono'];
@@ -32,24 +31,28 @@ if ($tipo == "registrar") {
     // encriptando contraseña
     $password = password_hash($nro_identidad, PASSWORD_DEFAULT);
 
-    if ($nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == ""  || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
+    if ($nro_identidad == "" || $razon_social == "" || $telefono == "" || $correo == "" || $departamento == "" || $provincia == "" || $distrito == "" || $cod_postal == "" || $direccion == "" || $rol == "") {
         $arrResponse = array('status' => false, 'msg' => 'Error, campos vacios');
+        echo json_encode($arrResponse);
+        exit();
     } else {
         //validacion si existe persona con el mismo dni
         $existePersona = $objPersona->existePersona($nro_identidad);
         if ($existePersona > 0) {
+            http_response_code(400); // Código de estado HTTP para Bad Request
             $arrResponse = array('status' => false, 'msg' => 'Error, nro de documento ya existe');
+            echo json_encode($arrResponse);
+            exit();
         } else {
-
             $respuesta = $objPersona->registrar($nro_identidad, $razon_social, $telefono, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $password);
             if ($respuesta) {
-                $arrResponse = array('status' => true, 'msg' => 'Registrado corectamente');
+                $arrResponse = array('status' => true, 'msg' => 'Registrado correctamente');
             } else {
                 $arrResponse = array('status' => false, 'msg' => 'Error, fallo en registro');
             }
+            echo json_encode($arrResponse);
         }
     }
-    echo json_encode($arrResponse);
 }
 
 if($tipo == "iniciar_sesion"){
@@ -105,57 +108,7 @@ if ($tipo == "mostrar_usuarios") {
     header('Content-Type: application/json');
     echo json_encode($usuarios);
 }
-/*
-if ($tipo == "obtener_usuario"){
-    if (!isset($_POST['id']) || empty($_POST['id'])) {
-        echo json_encode(array('status' => false, 'msg' => 'Error, id no existe'));
-        exit;
-    }
-    $id = $_POST['id'];
-    $usuario = $objpPersona->obtenerUsuarioPorId($id);
-    header('Content-Type: application/json');
-    if($usuario){
-        echo json_encode(array('status' => true, 'data' => $usuario));
-    }else{
-        echo json_encode(array('status' => false, 'msg' => 'Error, usuario no encontrado'));
-    }
-}
 
-if ($tipo == "actualizar_usuario") {
-    if (!isset($_POST['id']) || empty($_POST['id'])) {
-        echo json_encode(array('status' => false, 'msg' => 'ID no existe'));
-        exit;
-    }
-    $id = $_POST['id'];
-    $nro_identidad = $_POST['nro_identidad'];
-    $razon_social = $_POST['razon_social'];
-    $correo = $_POST['correo'];
-    $departamento = $_POST['departamento'];
-    $provincia = $_POST['provincia'];
-    $distrito = $_POST['distrito'];
-    $cod_postal = $_POST['cod_postal'];
-    $direccion = $_POST['direccion'];
-    $rol = $_POST['rol'];
-    $estado = $_POST['estado'];
-
-    if ($objpPersona->existeIdentidadEnOtroUsuario($nro_identidad, $id)) {
-        echo json_encode(array('status' => false, 'msg' => 'El DNI ya existe en orto usuario'));
-        exit;
-    }
-    if ($objpPersona->existeCorreoEnOtroUsuario($correo, $id)) {
-        echo json_encode(array('status' => false, 'msg' => 'El correo ya existe en orto usuario'));
-        exit;
-    }
-    $succes = $objpPersona->actualizarUsuario($id, $nro_identidad, $razon_social, $correo, $departamento, $provincia, $distrito, $cod_postal, $direccion, $rol, $estado);
-    header('Content-Type: application/json');
-    if ($succes) {
-        $respuesta = array('status' => true, 'msg' => 'Usuario actualizado');
-    }else{
-        $respuesta = array('status' => false, 'msg' => 'Error al actualizar usuario');
-    }
-    echo json_encode($respuesta);
-}
-*/
 
 if ($tipo == "ver"){
     $respuesta = array('status' => false, 'msg' => '');
