@@ -1,3 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas</title>
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>view/bootstrap/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 10px; }
+        .product-item { border: 1px solid #dee2e6; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+        .product-item h5 { color: #007bff; }
+        .product-item p { margin: 5px 0; }
+        .product-item button { margin-top: 5px; }
+    </style>
+</head>
+<body>
 <div class="container-fluid mt-4 row">
     <h2>Ventas</h2>
     <div class="col-9">
@@ -7,10 +24,12 @@
                 <div class="row mb-3">
                     <div class="col-12">
                         <div class="input-group">
-                            <input type="text" class="form-control" id="txtBuscarProducto" placeholder="Buscar producto por nombre o código...">
-                            <button class="btn btn-primary" type="button" id="btnBuscarProducto">
-                                <i class="bi bi-search"></i> Buscar
-                            </button>
+                            <input id="busqueda_venta" type="text" class="form-control"   placeholder="Buscar producto por nombre o código..." onkeyup="buscarProductosVenta(this.value);">
+                            <input type="hidden" id="id_producto_venta">
+                            <input type="hidden" id="producto_precio_venta">
+                            <input type="hidden" id="producto_cantidad_venta" value="1">
+                            
+                            
                         </div>
                     </div>
                 </div>
@@ -62,4 +81,17 @@
 </div>
 
 <script src="<?php echo BASE_URL; ?>view/function/ejemplo.js"></script>
+<script src="<?php echo BASE_URL; ?>view/function/ventas.js"></script>
+<script>
+    let input = document.getElementById("busqueda_venta");
+    input.addEventListener('keydown',(event)=>{
+        if (event.key =='Enter') {
+            agregar_producto_temporal();
+            
+        }
+    });
+</script>
+<script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 

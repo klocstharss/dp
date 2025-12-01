@@ -20,7 +20,6 @@ function validar_form(tipo) {
         });
         return;
     }
-
     if (tipo == "nuevo") {
         registrarUsuario();
     }

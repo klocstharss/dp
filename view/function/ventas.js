@@ -16,10 +16,10 @@ async function mostrar_productos_ejemplo() {
         }
 
         let json = await respuesta.json();
-        contenidot = document.getElementById('producto_venta');
+        const container = document.getElementById('productos_venta');
+        container.innerHTML = '';
         if (json.status && json.data && json.data.length > 0) {
             let html = '';
-            contenidot.innerHTML = '';
             json.data.forEach((producto) => {
                 let imagenHtml = '';  
                 if (producto.imagen) {
@@ -72,13 +72,13 @@ async function mostrar_productos_ejemplo() {
                     </div>
                 </div>`;
             });
-            document.getElementById('producto_venta').innerHTML = html;
+            container.innerHTML = html;
         } else {
-            document.getElementById('producto_venta').innerHTML = '<div class="text-center py-5"><div class="text-muted"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay productos disponibles</div></div>';
+            container.innerHTML = '<div class="text-center py-5"><div class="text-muted"><i class="bi bi-inbox fs-1 d-block mb-2"></i>No hay productos disponibles</div></div>';
         }
     } catch (error) {
         console.error("Error al cargar productos:", error);
-        document.getElementById('producto_venta').innerHTML = '<div class="text-center py-5"><div class="text-danger"><i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>Error al cargar los productos</div></div>';
+        container.innerHTML = '<div class="text-center py-5"><div class="text-danger"><i class="bi bi-exclamation-triangle fs-1 d-block mb-2"></i>Error al cargar los productos</div></div>';
     }
 }
 
@@ -106,3 +106,31 @@ productos_venta[id] = producto;
 
 
 console.log(productos_venta);
+
+async function agregar_producto_temporal() {
+    let id= document.getElementById('id_producto_venta').value;
+    let precio= document.getElementById('producto_precio_venta').value;
+    let cantidad= document.getElementById('producto_cantidad_venta').value;
+     const datos = new FormData();
+     datos.append('id_producto',id);
+     datos.append('precio',precio);
+     datos.append('cantidad',cantidad);
+     try {
+        let respuesta = await fetch(base_url + 'control/VentaController.php?tipo=registrarTemporal', {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        body: datos
+    });
+    json = await respuesta.json();
+    if(json.status){
+        if (json.msj =="registrado") {
+            alert("producto registrado")
+        }else{
+            alert("producto  actualizado")
+        }
+    }
+     } catch (error) {
+        console.log("error en agregar producto temporal "+error);
+     }
+}

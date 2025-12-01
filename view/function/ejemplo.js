@@ -1,35 +1,13 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Cargar todos los productos al inicio
     cargarProductosVenta();
-
-    // Configurar el evento de búsqueda
-    document.getElementById("btnBuscarProducto").addEventListener("click", function() {
-        const dato = document.getElementById("txtBuscarProducto").value;
-        if (dato.trim() === "") {
-            cargarProductosVenta();
-        } else {
-            buscarProductosVenta(dato);
-        }
-    });
-
-    // También buscar cuando se presiona Enter en el campo de texto
-    document.getElementById("txtBuscarProducto").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            const dato = this.value;
-            if (dato.trim() === "") {
-                cargarProductosVenta();
-            } else {
-                buscarProductosVenta(dato);
-            }
-        }
-    });
 });
 
 // Función para cargar todos los productos
 async function cargarProductosVenta() {
     try {
         console.log("Cargando productos desde:", base_url + 'control/ProductosController.php?tipo=mostrar_productos');
-        
+
         let respuesta = await fetch(base_url + 'control/ProductosController.php?tipo=mostrar_productos', {
             method: 'POST',
             mode: 'cors',
@@ -43,8 +21,26 @@ async function cargarProductosVenta() {
         container.innerHTML = '';
 
         if (json.status && json.data && json.data.length > 0) {
+            let cont = 0;
+            let contenido = document.getElementById('productos_venta');
             json.data.forEach(producto => {
-                crearTarjetaProducto(producto);
+                let nueva_fila = document.createElement("div");
+                nueva_fila.className = "col-md-4 col-sm-6 col-xs-12";
+                let producto_list = `<div class="product-item">
+<h5>${producto.nombre}</h5>
+<p>Código: ${producto.codigo}</p>
+<p>Precio: S/ ${producto.precio}</p>
+<button onclick="agregarProductoAlCarrito(producto)">Agregar</button>
+</div>`;
+                nueva_fila.innerHTML = producto_list;
+                cont++;
+                contenido.appendChild(nueva_fila);
+                let id = document.getElementById('id_producto_venta');
+                let precio = document.getElementById('producto_precio_venta');
+                let cantidad = document.getElementById('producto_cantidad_venta');
+                id.value = producto.id;
+                precio.value = producto.precio;
+                cantidad.value = 1;
             });
         } else {
             container.innerHTML = `<div class="col-12 text-center py-5">
@@ -89,10 +85,11 @@ async function buscarProductosVenta(dato) {
         container.innerHTML = '';
 
         if (json.status && json.data && json.data.length > 0) {
-            json.data.forEach(producto => {
-                crearTarjetaProducto(producto);
-            });
-        } else {
+            // Set hidden inputs for the first product found
+            let primerProducto = json.data[0];
+            document.getElementById('id_producto_venta').value = primerProducto.id;
+            document.getElementById('producto_precio_venta').value = primerProducto.precio;
+            document.getElementById('producto_cantidad_venta').value = 1;
             container.innerHTML = `<div class="col-12 text-center py-5">
                 <div class="text-muted">
                     <i class="bi bi-search fs-1 d-block mb-2"></i>
@@ -155,6 +152,12 @@ function crearTarjetaProducto(producto) {
     title.textContent = producto.nombre;
     cardBody.appendChild(title);
 
+    // Código del producto
+    const code = document.createElement('p');
+    code.className = 'card-text small text-muted';
+    code.textContent = `Código: ${producto.codigo || 'Sin código'}`;
+    cardBody.appendChild(code);
+
     // Descripción
     const description = document.createElement('p');
     description.className = 'card-text text-muted small';
@@ -186,7 +189,7 @@ function crearTarjetaProducto(producto) {
     const button = document.createElement('button');
     button.className = 'btn btn-primary w-100';
     button.innerHTML = '<i class="bi bi-cart-plus"></i> Agregar';
-    button.onclick = function() {
+    button.onclick = function () {
         agregarProductoAlCarrito(producto);
     };
 
@@ -261,7 +264,7 @@ function agregarProductoAlCarrito(producto) {
         const botonEliminar = document.createElement('button');
         botonEliminar.className = 'btn btn-danger btn-sm';
         botonEliminar.innerHTML = '<i class="bi bi-trash"></i>';
-        botonEliminar.onclick = function() {
+        botonEliminar.onclick = function () {
             fila.remove();
             actualizarTotales();
         };
@@ -282,6 +285,36 @@ function agregarProductoAlCarrito(producto) {
         timer: 1500,
         showConfirmButton: false
     });
+}
+
+// Función para seleccionar producto y guardar en temporal
+async function seleccionarProducto(id, nombre, precio) {
+    let idInput = document.getElementById('id_producto_venta');
+    let precioInput = document.getElementById('producto_precio_venta');
+    let cantidadInput = document.getElementById('producto_cantidad_venta');
+    idInput.value = id;
+    precioInput.value = precio;
+    cantidadInput.value = 1;
+    agregarProductoAlCarrito({id: id, nombre: nombre, precio: precio});
+    // Guardar en temporal_venta
+    const datos = new FormData();
+    datos.append('id_producto', id);
+    datos.append('precio', precio);
+    datos.append('cantidad', 1);
+    try {
+        let respuesta = await fetch(base_url + 'control/VentaController.php?tipo=registrarTemporal', {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-cache',
+            body: datos
+        });
+        let json = await respuesta.json();
+        if (json.status) {
+            console.log('Producto guardado en temporal_venta');
+        }
+    } catch (error) {
+        console.error("Error al guardar en temporal_venta:", error);
+    }
 }
 
 // Función para actualizar los totales del carrito
