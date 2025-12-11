@@ -1,5 +1,5 @@
 <?php
-require_once("../library/conexion.php");
+require_once(__DIR__ . "/../library/conexion.php");
 class VentaModel {
     private $conexion;
 
@@ -53,7 +53,5 @@ class VentaModel {
         $sql = $this->conexion->query($consulta);
         return $sql;
     }
-    //-------VENTAS REGISTRADAS(OFICIALES)
-
-
 }
+?>

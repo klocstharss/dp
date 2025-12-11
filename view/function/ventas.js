@@ -13,7 +13,7 @@ async function buscarProductosVenta(valor) {
             cache: 'no-cache',
             body: datos
         });
-        
+
         if (!respuesta.ok) {
             throw new Error(`HTTP error! status: ${respuesta.status}`);
         }
@@ -26,7 +26,7 @@ async function buscarProductosVenta(valor) {
             let html = '';
             json.data.forEach((producto) => {
                 const precioFormateado = producto.precio ? parseFloat(producto.precio).toFixed(2) : 'N/A';
-                
+
                 // Verificar si existe imagen, si no mostrar placeholder
                 let imagenHtml = '';
                 if (producto.imagen) {
@@ -34,7 +34,7 @@ async function buscarProductosVenta(valor) {
                 } else {
                     imagenHtml = '<div class="tarjetaProductoImagen d-flex align-items-center justify-content-center bg-light w-100" style="height: 100%;"><i class="bi bi-image fs-1 text-muted"></i></div>';
                 }
-                
+
                 html += `
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="tarjetaProducto h-100 shadow-sm border-0" style="border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;">
@@ -96,13 +96,16 @@ function decrementarCantidad(elementId) {
 }
 
 // Función para agregar producto al carrito
-function agregarAlCarrito(idProducto, nombre, precio) {
+async function agregarAlCarrito(idProducto, nombre, precio) {
     // Usar el ID del producto como clave
     const keyProducto = `producto_${idProducto}`;
-    
+
     if (carrito[keyProducto]) {
-        // Si ya existe el producto, aumentar la cantidad
+        // Si ya existe el producto, aumentar la cantidad localmente
         carrito[keyProducto].cantidad += 1;
+        carrito[keyProducto].total = carrito[keyProducto].precio * carrito[keyProducto].cantidad;
+        // Registrar incremento de 1 en la BD (temporal_venta)
+        await guardarProductoTemporal(idProducto, precio, 1);
     } else {
         // Crear nuevo item con el ID del producto como clave
         carrito[keyProducto] = {
@@ -112,6 +115,8 @@ function agregarAlCarrito(idProducto, nombre, precio) {
             cantidad: 1,
             total: parseFloat(precio)
         };
+        // Insertar en la BD (temporal_venta)
+        await guardarProductoTemporal(idProducto, precio, 1);
     }
 
     // Actualizar la tabla del carrito
@@ -137,7 +142,15 @@ function actualizarTablaCarrito() {
                 <td>${item.nombre}</td>
                 <td>
                     <input type="number" class="form-control form-control-sm" value="${item.cantidad}" 
-                           onchange="actualizarCantidadCarrito('${key}', this.value)" min="1" style="width: 60px;">
+                           onchange="actualizarCantidadCarrito('${key}', this.value)"
+                            onkeydown="if(event.key === 'Enter') { 
+                            if(this.value <= 0 || this.value === '') { 
+                            eliminarDelCarrito('${key}'); 
+                            } else { 
+                            actualizarCantidadCarrito('${key}', this.value); 
+                            }
+                            }"                            min="0" style="width: 60px;">
+                            
                 </td>
                 <td>S/ ${item.precio.toFixed(2)}</td>
                 <td>S/ ${totalItem.toFixed(2)}</td>
@@ -157,22 +170,40 @@ function actualizarTablaCarrito() {
 }
 
 // Función para actualizar cantidad en el carrito
-function actualizarCantidadCarrito(key, nuevaCantidad) {
-    const cantidad = parseInt(nuevaCantidad) || 1;
-    
-    if (cantidad <= 0) {
-        eliminarDelCarrito(key);
+async function actualizarCantidadCarrito(key, nuevaCantidad) {
+    const nueva = parseInt(nuevaCantidad) || 1;
+    const item = carrito[key];
+    if (!item) return;
+
+    const antigua = item.cantidad || 0;
+
+    if (nueva <= 0) {
+        // Reducir en la base de datos la cantidad existente (enviar negativo)
+        await guardarProductoTemporal(item.idProducto, item.precio, -antigua);
+        delete carrito[key];
+        actualizarTablaCarrito();
         return;
     }
 
-    carrito[key].cantidad = cantidad;
-    carrito[key].total = carrito[key].precio * cantidad;
+    const delta = nueva - antigua;
+    if (delta !== 0) {
+        // Enviar solo el delta al temporal (puede ser positivo o negativo)
+        guardarProductoTemporal(item.idProducto, item.precio, delta);
+    }
+
+    item.cantidad = nueva;
+    item.total = item.precio * nueva;
     actualizarTablaCarrito();
 }
 
 // Función para eliminar del carrito
 function eliminarDelCarrito(key) {
-    delete carrito[key];
+    const item = carrito[key];
+    if (item) {
+        // Reducir en temporal_venta la cantidad completa del item
+        guardarProductoTemporal(item.idProducto, item.precio, -item.cantidad);
+        delete carrito[key];
+    }
     actualizarTablaCarrito();
 }
 
@@ -227,11 +258,11 @@ async function realizarVenta() {
 // Inicializar
 document.addEventListener('DOMContentLoaded', function () {
     buscarProductosVenta('');
-    
+
     // Agregar evento al input de búsqueda para Enter
     const inputBusqueda = document.getElementById('busqueda_venta');
     if (inputBusqueda) {
-        inputBusqueda.addEventListener('keydown', function(event) {
+        inputBusqueda.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 agregarProductoPorBusqueda();
@@ -243,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Función para agregar producto encontrado al presionar Enter
 async function agregarProductoPorBusqueda() {
     const valor = document.getElementById('busqueda_venta').value.trim();
-    
+
     if (!valor) {
         alert('Por favor ingresa un código o nombre de producto');
         return;
@@ -259,23 +290,23 @@ async function agregarProductoPorBusqueda() {
             cache: 'no-cache',
             body: datos
         });
-        
+
         if (!respuesta.ok) {
             throw new Error(`HTTP error! status: ${respuesta.status}`);
         }
 
         let json = await respuesta.json();
-        
+
         if (json.status && json.data && json.data.length > 0) {
             // Tomar el primer producto encontrado
             const producto = json.data[0];
-            
+
             // Guardar en base de datos (tabla temporal_venta)
             await guardarProductoTemporal(producto.id, producto.precio, 1);
-            
+
             // Agregar al carrito local
             const keyProducto = `producto_${producto.id}`;
-            
+
             if (carrito[keyProducto]) {
                 carrito[keyProducto].cantidad += 1;
             } else {
@@ -289,11 +320,11 @@ async function agregarProductoPorBusqueda() {
             }
 
             actualizarTablaCarrito();
-            
+
             // Limpiar búsqueda y mostrar mensaje
             document.getElementById('busqueda_venta').value = '';
             buscarProductosVenta('');
-            
+
             alert(`${producto.nombre} agregado al carrito`);
         } else {
             alert('Producto no encontrado');
@@ -340,11 +371,11 @@ function verDetalleProducto(idProducto, nombreProducto) {
 // Inicializar
 document.addEventListener('DOMContentLoaded', function () {
     buscarProductosVenta('');
-    
+
     // Agregar evento al input de búsqueda para Enter
     const inputBusqueda = document.getElementById('busqueda_venta');
     if (inputBusqueda) {
-        inputBusqueda.addEventListener('keydown', function(event) {
+        inputBusqueda.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 event.preventDefault();
                 agregarProductoPorBusqueda();
@@ -352,3 +383,4 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
