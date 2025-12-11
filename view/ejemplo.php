@@ -25,11 +25,6 @@
                     <div class="col-12">
                         <div class="input-group">
                             <input id="busqueda_venta" type="text" class="form-control"   placeholder="Buscar producto por nombre o código..." onkeyup="buscarProductosVenta(this.value);">
-                            <input type="hidden" id="id_producto_venta">
-                            <input type="hidden" id="producto_precio_venta">
-                            <input type="hidden" id="producto_cantidad_venta" value="1">
-                            
-                            
                         </div>
                     </div>
                 </div>
@@ -57,11 +52,7 @@
                             </thead>
                             <tbody id="lista_compra">
                                 <tr>
-                                    <td>Producto 1</td>
-                                    <td>2</td>
-                                    <td>$10.00</td>
-                                    <td>$20.00</td>
-                                    <td><button class="btn btn-danger btn-sm">Eliminar</button></td>
+                                    <td colspan="5" class="text-center text-muted">El carrito está vacío</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -69,10 +60,10 @@
                 </div>
                 <div class="row">
                     <div class="col-12 text-end">
-                        <h4>Subtotal : <label id="">$20.00</label></h4>
-                        <h4>Igv : <label id="">$20.00</label></h4>
-                        <h4>Total : <label id="">$20.00</label></h4>
-                        <button class="btn btn-success">Realizar Venta</button>
+                        <h4>Subtotal : <label id="subtotal_label">S/ 0.00</label></h4>
+                        <h4>Igv : <label id="igv_label">S/ 0.00</label></h4>
+                        <h4>Total : <label id="total_label">S/ 0.00</label></h4>
+                        <button class="btn btn-success" onclick="realizarVenta()">Realizar Venta</button>
                     </div>
                 </div>
             </div>
@@ -80,17 +71,10 @@
     </div>
 </div>
 
-<script src="<?php echo BASE_URL; ?>view/function/ejemplo.js"></script>
-<script src="<?php echo BASE_URL; ?>view/function/ventas.js"></script>
 <script>
-    let input = document.getElementById("busqueda_venta");
-    input.addEventListener('keydown',(event)=>{
-        if (event.key =='Enter') {
-            agregar_producto_temporal();
-            
-        }
-    });
+    const base_url = '<?php echo BASE_URL; ?>';
 </script>
+<script src="<?php echo BASE_URL; ?>view/function/ventas.js"></script>
 <script src="<?php echo BASE_URL; ?>view/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

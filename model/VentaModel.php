@@ -10,17 +10,21 @@ class VentaModel {
     public function registrar_temporal($id_producto, $precio, $cantidad)
      {
         $consulta = "INSERT INTO temporal_venta (id_producto, precio, cantidad) 
-        VALUES ('id_producto', 'precio', 'cantidad')";
-        $sql = $this->conexion->query($consulta);
-        if ($sql) {
+        VALUES (?, ?, ?)";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->bind_param("idi", $id_producto, $precio, $cantidad);
+        $result = $stmt->execute();
+        if ($result) {
             return $this->conexion->insert_id;
         } 
-            return 0;
+        return 0;
     }
     public function actualizarCantidadTemporal($id_producto, $cantidad) {
-        $consulta = "UPDATE temporal_venta SET cantidad='$cantidad' WHERE id_producto= '$id_producto'";
-        $sql = $this->conexion->query($consulta);
-        return $sql;
+        $consulta = "UPDATE temporal_venta SET cantidad = cantidad + ? WHERE id_producto = ?";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->bind_param("ii", $cantidad, $id_producto);
+        $result = $stmt->execute();
+        return $result;
     }
     public function buscarTemporales(){
         $arr_temporal = array();
@@ -32,9 +36,12 @@ class VentaModel {
         return $arr_temporal;
     }
     public function buscarTemporal($id_producto){
-        $consulta = "SELECT * FROM temporal_venta WHERE id_producto = '$id_producto'";
-        $sql = $this->conexion->query($consulta);
-        return $sql->fetch_object();
+        $consulta = "SELECT * FROM temporal_venta WHERE id_producto = ?";
+        $stmt = $this->conexion->prepare($consulta);
+        $stmt->bind_param("i", $id_producto);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
     }
     public function eliminar_temporal($id){
         $consulta = "DELETE FROM temporal_venta WHERE id='$id'";
